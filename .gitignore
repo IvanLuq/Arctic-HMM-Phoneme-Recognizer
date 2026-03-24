@@ -15,8 +15,13 @@ env/
 # Jupyter
 .ipynb_checkpoints/
 
-# Local data and generated features (keep out of git)
-data/
+# Large data and generated features (keep out of git)
+data/cmu_us_slt_arctic/
+data/_out/
+data/out/
+
+# Archive
+project2.zip
 
 # Logs
 *.log
