@@ -1,112 +1,128 @@
-  Project 2: HMM Phoneme Recognizer
-  README
-================================================================================
+# HMM Phoneme Recognizer Project
 
-OVERVIEW
---------
-This project implements a Hidden Markov Model (HMM) for automatic speech
-phoneme recognition. It covers:
+## Overview
 
-  - Supervised HMM parameter estimation (initial distribution, transition
-    matrix, Gaussian emission models) using aligned MFCC training data.
-  - Three inference algorithms: Forward Filtering, Viterbi Decoding, and
-    Forward-Backward Smoothing which was an addition we decided to make.
-  - Comprehensive evaluation with frame-level accuracy, confusion matrices,
-    and per-phoneme precision/recall
+This project implements a **Hidden Markov Model (HMM)** for automatic speech phoneme recognition using aligned **MFCC** feature data and phoneme labels.
 
-The phoneme inventory is the 41-symbol ARPAbet set (vowels, consonants,
-and silence/pause).
+The system models speech as a sequence of hidden phoneme states and supports three inference methods:
 
+- **Forward Filtering**
+- **Viterbi Decoding**
+- **Forward-Backward Smoothing** *(added as an extension to the original project)*
 
-PREREQUISITES
--------------
-Python version: 3.8 or higher
+The project includes:
+
+- Supervised estimation of HMM parameters from labelled training data
+- Frame-level phoneme prediction
+- Evaluation on training, validation, and test sets
+- Confusion matrices and per-phoneme precision/recall analysis
+- Example utterance comparisons between predicted and true phoneme sequences
+
+The phoneme inventory is based on the **41-symbol ARPAbet set**, including vowels, consonants, and silence/pause. Each observation frame is represented as a **39-dimensional MFCC feature vector**. :contentReference[oaicite:1]{index=1}
+
+---
+
+## Model Description
+
+### Hidden State Space
+
+The hidden state variable represents the spoken phoneme at each frame.  
+Each state corresponds to one of the 41 phoneme symbols in the dataset.
+
+### Observation Model
+
+Each frame is represented by a feature vector:
+
+- `O_t ∈ R^39`
+
+The emission distribution for each phoneme is modeled as a **multivariate Gaussian** with:
+
+- Mean vector `μ_i`
+- Covariance matrix `Σ_i`
+
+---
+
+## HMM Parameters
+
+The model is defined by the following components:
+
+- **Initial state distribution** `π`
+- **Transition matrix** `A`
+- **Emission means** `μ`
+- **Emission covariance matrices** `Σ`
+
+These parameters are estimated in a supervised way from aligned training data.
+
+---
+
+## Parameter Estimation
+
+### 1. Initial State Distribution
+The initial distribution is estimated by counting how often each phoneme appears as the first state in an utterance.
+
+### 2. Transition Matrix
+The transition matrix is estimated by counting adjacent phoneme transitions across the training set.  
+Additive smoothing is applied to avoid zero-probability transitions.
+
+### 3. Emission Parameters
+For each phoneme, all corresponding MFCC frames are collected from the training data and used to compute:
+
+- The sample mean vector
+- The sample covariance matrix
+
+A small regularization term is added to covariance matrices to improve numerical stability. :contentReference[oaicite:2]{index=2}
+
+---
+
+## Inference Methods
+
+### Forward Filtering
+Computes the posterior belief over phoneme states at each frame using only past and current observations.
+
+### Viterbi Decoding
+Finds the single most likely phoneme sequence using dynamic programming in log-space.
+
+### Forward-Backward Smoothing
+Computes the posterior state probabilities using both past and future observations.  
+This was implemented as an additional inference method to compare against Filtering and Viterbi. :contentReference[oaicite:3]{index=3}
+
+---
+
+## Numerical Stability
+
+To make the implementation robust:
+
+- Forward probabilities are normalized at each timestep
+- Viterbi is computed fully in **log-space**
+- Emission probabilities are clamped before taking logs
+- Covariance matrices are regularized to avoid singularities
+
+---
+
+## Evaluation
+
+The model is evaluated using:
+
+- **Frame-level accuracy**
+- **Confusion matrices**
+- **Per-phoneme precision, recall, and F1-score**
+- **Example utterance comparisons**
+
+According to our results, **Viterbi performed slightly better than Filtering and Smoothing**, achieving the best validation performance among the three methods. :contentReference[oaicite:4]{index=4}
+
+---
+
+## Prerequisites
+
+- Python **3.8 or higher**
 
 Required packages:
-  numpy
-  scipy
-  matplotlib
 
-Install all dependencies at once with:
+- `numpy`
+- `scipy`
+- `matplotlib`
 
-    pip install numpy scipy matplotlib
+Install all dependencies with:
 
-
-DATA REQUIREMENTS
------------------
-The notebook expects the following directory structure relative to the
-notebook file (it is prepared to work both on google colab and locally on VS code):
-
-  data/
-  ├── _out/# Pre-extracted MFCC feature files (.npy)
-  │     └── <utterance_id>.npy
-  ├── cmu_us_slt_arctic/
-  │     └── lab/ # Phoneme label files (.lab)
-  │           └── <utterance_id>.lab
-  └── txt/ # Train/val/test split lists
-        ├── train.txt
-        ├── val.txt
-        └── test.txt
-
-Feature files (.npy): NumPy arrays of shape (n_frames, n_features)
-  that contain pre-computed MFCC coefficients at a 10 ms frame step.
-
-Label files (.lab): Space-delimited text files with one phoneme boundary
-  per line in the format:  <end_time>  <field>  <phoneme_label>
-
-Split files (.txt): One utterance filename stem per line, defining which
-  utterances belong to the training, validation, and test sets.
-
-
-HOW TO RUN
-----------
-
-Option 1 — VS Code
-  1. Open the folder containing `project2.ipynb` in VS Code.
-  2. Install the "Jupyter" extension if not already installed.
-  3. Open `project2.ipynb` and click "Run All" at the top of the notebook,
-     or run cells individually with Shift+Enter.
-  4. Select a Python kernel that has all required packages installed.
-
-Option 2 — Google Colab
-  1. Upload `project2.ipynb` to Google Colab (or open it from Google Drive).
-  2. Mount your Google Drive when prompted (the notebook contains a Drive
-     mount cell); ensure the `data/` directory is placed at:
-         /content/drive/Shareddrives/AI_RU/project2/data
-  3. Run all cells in order.
-
-
-EXPECTED OUTPUTS
-----------------
-After running all cells the notebook produces:
-
-  - Trained HMM parameters:
-      * Initial state distribution (π), shape (41,)
-      * Transition matrix (A), shape (41, 41)
-      * Gaussian emission parameters (mean μ and covariance Σ) per phoneme
-
-  - Frame-level accuracy (%) on train, validation, and test sets for each
-    of the three inference methods (Filtering, Viterbi, Smoothing)
-
-  - Confusion matrix heatmaps (41×41) and per-phoneme metrics table
-    (precision, recall, F1) for each inference method
-
-  - Example utterance visualizations comparing predicted phoneme sequences
-    against ground-truth labels
-
-
-TROUBLESHOOTING
----------------
-- "Module not found" errors: Verify all packages listed under Prerequisites
-  are installed in the active Python environment/kernel.
-
-- Data path errors: Confirm that the `data/` folder exists alongside the
-  notebook and contains the three required subdirectories (_out/, lab/, txt/).
-
-- Memory issues on full evaluation: Reduce `max_eval_utterances` to limit
-  the number of utterances processed during evaluation.
-
-- Slow inference: Viterbi and Forward-Backward smoothing are O(T * K^2)
-  per utterance; expect several minutes for the full test set on a CPU.
-
-================================================================================
+```bash
+pip install numpy scipy matplotlib
