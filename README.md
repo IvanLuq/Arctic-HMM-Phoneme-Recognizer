@@ -70,7 +70,7 @@ For each phoneme, all corresponding MFCC frames are collected from the training 
 - The sample mean vector
 - The sample covariance matrix
 
-A small regularization term is added to covariance matrices to improve numerical stability. :contentReference[oaicite:2]{index=2}
+A small regularization term is added to covariance matrices to improve numerical stability.
 
 ---
 
