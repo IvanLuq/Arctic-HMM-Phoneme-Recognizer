@@ -84,7 +84,7 @@ Finds the single most likely phoneme sequence using dynamic programming in log-s
 
 ### Forward-Backward Smoothing
 Computes the posterior state probabilities using both past and future observations.  
-This was implemented as an additional inference method to compare against Filtering and Viterbi. :contentReference[oaicite:3]{index=3}
+This was implemented as an additional inference method to compare against Filtering and Viterbi.
 
 ---
 
@@ -108,7 +108,7 @@ The model is evaluated using:
 - **Per-phoneme precision, recall, and F1-score**
 - **Example utterance comparisons**
 
-According to our results, **Viterbi performed slightly better than Filtering and Smoothing**, achieving the best validation performance among the three methods. :contentReference[oaicite:4]{index=4}
+According to our results, **Viterbi performed slightly better than Filtering and Smoothing**, achieving the best validation performance among the three methods.
 
 ---
 
