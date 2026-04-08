@@ -18,7 +18,7 @@ The project includes:
 - Confusion matrices and per-phoneme precision/recall analysis
 - Example utterance comparisons between predicted and true phoneme sequences
 
-The phoneme inventory is based on the **41-symbol ARPAbet set**, including vowels, consonants, and silence/pause. Each observation frame is represented as a **39-dimensional MFCC feature vector**. :contentReference[oaicite:1]{index=1}
+The phoneme inventory is based on the **41-symbol ARPAbet set**, including vowels, consonants, and silence/pause. Each observation frame is represented as a **39-dimensional MFCC feature vector**.
 
 ---
 
